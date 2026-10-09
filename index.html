@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Los Nerdys</title>
+  <meta name="description" content="Los Nerdys: where latinidad and nerdiness intersect. Tech, cultura, y un chingo de curiosidad.">
+  <link rel="icon" type="image/png" href="assets/calavera.png">
+  <link rel="canonical" href="https://losnerdys.tech/">
+
+  <!-- Social cards (iMessage, Slack, LinkedIn, X) -->
+  <meta property="og:title" content="Los Nerdys">
+  <meta property="og:description" content="Tech, cultura, y un chingo de curiosidad.">
+  <meta property="og:image" content="https://losnerdys.tech/assets/calavera.png">
+  <meta property="og:url" content="https://losnerdys.tech/">
+  <meta property="og:type" content="website">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="nav">
+    <a class="brand" href="./">LOS NERDYS</a>
+    <nav>
+      <a href="#episodes">Episodios</a>
+      <a href="#about">About</a>
+      <a href="https://losnerdys.substack.com" target="_blank" rel="noopener">Substack</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <img class="calavera" src="assets/calavera.png" alt="Los Nerdys calavera logo: a sugar skull with nerd glasses, a game controller, and a rocket">
+      <h1>LOS NERDYS</h1>
+      <p class="tagline">Tech, cultura, y un chingo de curiosidad.</p>
+      <div class="cta">
+        <a class="btn btn-red" href="https://losnerdys.substack.com" target="_blank" rel="noopener">Subscribe on Substack</a>
+        <!-- TODO: drop in the YouTube channel URL -->
+        <a class="btn btn-ghost" href="#" target="_blank" rel="noopener">Watch on YouTube</a>
+      </div>
+    </section>
+
+    <section id="episodes" class="block">
+      <span class="label">// EPISODIOS</span>
+      <h2>Latest episodes</h2>
+      <div class="grid">
+        <!-- Episode card template. Copy/paste per episode. -->
+        <article class="card">
+          <span class="ep">EP. 001</span>
+          <h3>Coming soon</h3>
+          <p>Episode cards land here.</p>
+        </article>
+        <article class="card">
+          <span class="ep">EP. 002</span>
+          <h3>Coming soon</h3>
+          <p>Episode cards land here.</p>
+        </article>
+        <article class="card">
+          <span class="ep">EP. 003</span>
+          <h3>Coming soon</h3>
+          <p>Episode cards land here.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="about" class="block">
+      <span class="label">// ABOUT</span>
+      <h2>Where latinidad and nerdiness intersect</h2>
+      <p>Conversations with Latiné and allied voices in tech. Hosted by John Martinez.</p>
+    </section>
+  </main>
+
+  <footer>
+    <p class="signoff">El Futuro es Nuestro.</p>
+    <p class="fine">&copy; <span id="yr"></span> Los Nerdys</p>
+  </footer>
+
+  <script>document.getElementById('yr').textContent = new Date().getFullYear();</script>
+</body>
+</html>
