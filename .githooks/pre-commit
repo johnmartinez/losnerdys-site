@@ -1,0 +1,3 @@
+#!/bin/sh
+# Block commits that would publish an unencrypted prep sheet (the repo is public).
+exec node "$(git rev-parse --show-toplevel)/tools/lock-prep.mjs" --check
