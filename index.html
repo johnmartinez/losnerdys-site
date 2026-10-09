@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -8,45 +8,61 @@
   <link rel="icon" type="image/png" href="assets/calavera.png">
   <link rel="canonical" href="https://losnerdys.tech/">
 
-  <!-- Social cards (iMessage, Slack, LinkedIn, X) -->
   <meta property="og:title" content="Los Nerdys">
   <meta property="og:description" content="Tech, cultura, y un chingo de curiosidad.">
   <meta property="og:image" content="https://losnerdys.tech/assets/calavera.png">
   <meta property="og:url" content="https://losnerdys.tech/">
   <meta property="og:type" content="website">
 
+  <!-- Theme: dark is default. Apply saved choice before paint to avoid a flash. -->
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem('ln-theme');
+        if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+      } catch (e) {}
+    })();
+  </script>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header class="nav">
-    <a class="brand" href="./">LOS NERDYS</a>
-    <nav>
+    <a class="brand" href="./" aria-label="Los Nerdys home">LOS NERDYS<span class="cursor" aria-hidden="true">_</span></a>
+    <nav class="links">
       <a href="#episodes">Episodios</a>
       <a href="#about">About</a>
       <a href="https://losnerdys.substack.com" target="_blank" rel="noopener noreferrer">Substack</a>
       <a href="https://www.youtube.com/@losnerdys" target="_blank" rel="noopener noreferrer">YouTube</a>
+      <a class="bio" href="https://bio.johnmartinez.com" target="_blank" rel="noopener noreferrer">John Martinez ↗</a>
+      <button class="theme-toggle" type="button" aria-label="Switch to light mode" title="Toggle light / dark">
+        <svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg>
+        <svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 1 1 9.5 3.5a7 7 0 0 0 11 11z"/></svg>
+      </button>
     </nav>
   </header>
 
   <main>
     <section class="hero">
+      <div class="hero-grid" aria-hidden="true"></div>
       <img class="calavera" src="assets/calavera.png" alt="Los Nerdys calavera logo: a sugar skull with nerd glasses, a game controller, and a rocket">
-      <h1>LOS NERDYS</h1>
+      <p class="prompt" aria-hidden="true">~/los-nerdys $ ./play --episodio=latest</p>
+      <h1 class="title">LOS NERDYS<span class="cursor" aria-hidden="true">_</span></h1>
       <p class="tagline">Tech, cultura, y un chingo de curiosidad.</p>
       <div class="cta">
-        <a class="btn btn-red" href="https://losnerdys.substack.com" target="_blank" rel="noopener noreferrer">Subscribe on Substack</a>
+        <a class="btn btn-primary" href="https://losnerdys.substack.com" target="_blank" rel="noopener noreferrer">Subscribe on Substack</a>
         <a class="btn btn-ghost" href="https://www.youtube.com/@losnerdys" target="_blank" rel="noopener noreferrer">Watch on YouTube</a>
       </div>
     </section>
 
     <section id="episodes" class="block">
-      <span class="label">// EPISODIOS</span>
+      <span class="label">// episodios</span>
       <div class="section-head">
         <h2>Latest episodes</h2>
-        <a class="all-link" href="https://www.youtube.com/playlist?list=PLxdLOOOGiSe8Dq0jfi7OQkzby_uBLuOIQ" target="_blank" rel="noopener noreferrer">All episodes &rarr;</a>
+        <a class="all" href="https://www.youtube.com/playlist?list=PLxdLOOOGiSe8Dq0jfi7OQkzby_uBLuOIQ" target="_blank" rel="noopener noreferrer">All episodes →</a>
       </div>
 
       <div class="player">
@@ -59,16 +75,15 @@
           allowfullscreen></iframe>
       </div>
 
+      <!-- Episode card template. Newest first; drop the oldest once there are more than 3.
+      <a class="card" href="https://www.youtube.com/watch?v=VIDEO_ID" target="_blank" rel="noopener noreferrer">
+        <img class="thumb" src="https://i.ytimg.com/vi/VIDEO_ID/hqdefault.jpg" alt="Los Nerdys Ep. 00X with GUEST" loading="lazy">
+        <span class="ep">EP. 00X</span>
+        <h3>GUEST</h3>
+        <p>TITLE LINE</p>
+      </a>
+      -->
       <div class="grid">
-        <!--
-          Episode card template. Newest goes first; drop the oldest once there are more than 3.
-          <a class="card" href="https://www.youtube.com/watch?v=VIDEO_ID" target="_blank" rel="noopener noreferrer">
-            <img class="thumb" src="https://i.ytimg.com/vi/VIDEO_ID/hqdefault.jpg" alt="Los Nerdys Ep. 00X with GUEST" loading="lazy">
-            <span class="ep">EP. 00X</span>
-            <h3>GUEST</h3>
-            <p>TITLE LINE</p>
-          </a>
-        -->
         <a class="card" href="https://www.youtube.com/watch?v=p96DL7FWD5k" target="_blank" rel="noopener noreferrer">
           <img class="thumb" src="https://i.ytimg.com/vi/p96DL7FWD5k/hqdefault.jpg" alt="Los Nerdys Ep. 003 with Kimberly Owens" loading="lazy">
           <span class="ep">EP. 003</span>
@@ -91,9 +106,9 @@
     </section>
 
     <section id="about" class="block">
-      <span class="label">// ABOUT</span>
+      <span class="label">// about</span>
       <h2>Where latinidad and nerdiness intersect</h2>
-      <p>Conversations with Latiné and allied voices in tech. Hosted by John Martinez.</p>
+      <p>Conversations with Latiné and allied voices in tech. Hosted by <a class="inline" href="https://bio.johnmartinez.com" target="_blank" rel="noopener noreferrer">John Martinez</a>.</p>
     </section>
   </main>
 
@@ -102,10 +117,28 @@
     <nav class="social" aria-label="Los Nerdys elsewhere">
       <a href="https://www.youtube.com/@losnerdys" target="_blank" rel="noopener noreferrer">YouTube</a>
       <a href="https://losnerdys.substack.com" target="_blank" rel="noopener noreferrer">Substack</a>
+      <a href="https://bio.johnmartinez.com" target="_blank" rel="noopener noreferrer">John Martinez</a>
     </nav>
     <p class="fine">&copy; <span id="yr"></span> Los Nerdys</p>
   </footer>
 
-  <script>document.getElementById('yr').textContent = new Date().getFullYear();</script>
+  <script>
+    document.getElementById('yr').textContent = new Date().getFullYear();
+    (function () {
+      var root = document.documentElement;
+      var btn = document.querySelector('.theme-toggle');
+      function sync() {
+        var dark = root.getAttribute('data-theme') !== 'light';
+        btn.setAttribute('aria-label', dark ? 'Switch to light mode' : 'Switch to dark mode');
+      }
+      sync();
+      btn.addEventListener('click', function () {
+        var next = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+        root.setAttribute('data-theme', next);
+        try { localStorage.setItem('ln-theme', next); } catch (e) {}
+        sync();
+      });
+    })();
+  </script>
 </body>
 </html>
