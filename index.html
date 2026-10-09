@@ -26,7 +26,8 @@
     <nav>
       <a href="#episodes">Episodios</a>
       <a href="#about">About</a>
-      <a href="https://losnerdys.substack.com" target="_blank" rel="noopener">Substack</a>
+      <a href="https://losnerdys.substack.com" target="_blank" rel="noopener noreferrer">Substack</a>
+      <a href="https://www.youtube.com/@losnerdys" target="_blank" rel="noopener noreferrer">YouTube</a>
     </nav>
   </header>
 
@@ -36,32 +37,56 @@
       <h1>LOS NERDYS</h1>
       <p class="tagline">Tech, cultura, y un chingo de curiosidad.</p>
       <div class="cta">
-        <a class="btn btn-red" href="https://losnerdys.substack.com" target="_blank" rel="noopener">Subscribe on Substack</a>
-        <!-- TODO: drop in the YouTube channel URL -->
-        <a class="btn btn-ghost" href="#" target="_blank" rel="noopener">Watch on YouTube</a>
+        <a class="btn btn-red" href="https://losnerdys.substack.com" target="_blank" rel="noopener noreferrer">Subscribe on Substack</a>
+        <a class="btn btn-ghost" href="https://www.youtube.com/@losnerdys" target="_blank" rel="noopener noreferrer">Watch on YouTube</a>
       </div>
     </section>
 
     <section id="episodes" class="block">
       <span class="label">// EPISODIOS</span>
-      <h2>Latest episodes</h2>
+      <div class="section-head">
+        <h2>Latest episodes</h2>
+        <a class="all-link" href="https://www.youtube.com/playlist?list=PLxdLOOOGiSe8Dq0jfi7OQkzby_uBLuOIQ" target="_blank" rel="noopener noreferrer">All episodes &rarr;</a>
+      </div>
+
+      <div class="player">
+        <iframe
+          src="https://www.youtube-nocookie.com/embed/videoseries?list=PLxdLOOOGiSe8Dq0jfi7OQkzby_uBLuOIQ"
+          title="Los Nerdys episodes playlist"
+          loading="lazy"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          referrerpolicy="strict-origin-when-cross-origin"
+          allowfullscreen></iframe>
+      </div>
+
       <div class="grid">
-        <!-- Episode card template. Copy/paste per episode. -->
-        <article class="card">
-          <span class="ep">EP. 001</span>
-          <h3>Coming soon</h3>
-          <p>Episode cards land here.</p>
-        </article>
-        <article class="card">
-          <span class="ep">EP. 002</span>
-          <h3>Coming soon</h3>
-          <p>Episode cards land here.</p>
-        </article>
-        <article class="card">
+        <!--
+          Episode card template. Newest goes first; drop the oldest once there are more than 3.
+          <a class="card" href="https://www.youtube.com/watch?v=VIDEO_ID" target="_blank" rel="noopener noreferrer">
+            <img class="thumb" src="https://i.ytimg.com/vi/VIDEO_ID/hqdefault.jpg" alt="Los Nerdys Ep. 00X with GUEST" loading="lazy">
+            <span class="ep">EP. 00X</span>
+            <h3>GUEST</h3>
+            <p>TITLE LINE</p>
+          </a>
+        -->
+        <a class="card" href="https://www.youtube.com/watch?v=p96DL7FWD5k" target="_blank" rel="noopener noreferrer">
+          <img class="thumb" src="https://i.ytimg.com/vi/p96DL7FWD5k/hqdefault.jpg" alt="Los Nerdys Ep. 003 with Kimberly Owens" loading="lazy">
           <span class="ep">EP. 003</span>
-          <h3>Coming soon</h3>
-          <p>Episode cards land here.</p>
-        </article>
+          <h3>Kimberly Owens</h3>
+          <p>Two Nerds Talk About Responsible AI</p>
+        </a>
+        <a class="card" href="https://www.youtube.com/watch?v=sni0mh1QVfQ" target="_blank" rel="noopener noreferrer">
+          <img class="thumb" src="https://i.ytimg.com/vi/sni0mh1QVfQ/hqdefault.jpg" alt="Los Nerdys Ep. 002 with Arturo Lucatero" loading="lazy">
+          <span class="ep">EP. 002</span>
+          <h3>Arturo Lucatero</h3>
+          <p>Two Nerds Talk About AI Agents</p>
+        </a>
+        <a class="card" href="https://www.youtube.com/watch?v=m6fQp3M8Ovg" target="_blank" rel="noopener noreferrer">
+          <img class="thumb" src="https://i.ytimg.com/vi/m6fQp3M8Ovg/hqdefault.jpg" alt="Los Nerdys Ep. 001 with Adilene Mendoza" loading="lazy">
+          <span class="ep">EP. 001</span>
+          <h3>Adilene Mendoza</h3>
+          <p>Two Nerds Talk About Linux</p>
+        </a>
       </div>
     </section>
 
@@ -74,6 +99,10 @@
 
   <footer>
     <p class="signoff">El Futuro es Nuestro.</p>
+    <nav class="social" aria-label="Los Nerdys elsewhere">
+      <a href="https://www.youtube.com/@losnerdys" target="_blank" rel="noopener noreferrer">YouTube</a>
+      <a href="https://losnerdys.substack.com" target="_blank" rel="noopener noreferrer">Substack</a>
+    </nav>
     <p class="fine">&copy; <span id="yr"></span> Los Nerdys</p>
   </footer>
 
