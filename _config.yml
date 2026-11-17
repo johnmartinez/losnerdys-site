@@ -12,7 +12,7 @@ collections:
 
 defaults:
   - scope: { type: getinto }
-    values: { layout: guide }
+    values: { layout: guide, nav: getinto }
 
 exclude:
   - tools
