@@ -1,0 +1,92 @@
+---
+layout: default
+nav: getinto
+title: Write a Get Into guide
+description: "Got in? Pull the next one up. Write a Get Into guide for losnerdys.tech: one Markdown file, 3 to 5 pillars, and you get your own animated explainer."
+---
+{%- capture starter %}{% include getinto-guide-template.md %}{% endcapture -%}
+{%- assign repo = "https://github.com/johnmartinez/losnerdys-site" -%}
+    <section class="hero gi-hero">
+      <div class="hero-grid" aria-hidden="true"></div>
+      <div class="inner">
+        <p class="prompt" aria-hidden="true">~/los-nerdys $ ./getinto --campo=<span class="gi-c-slug">yours</span> --new</p>
+        <h1 class="title">WRITE ONE<span class="cursor" aria-hidden="true">_</span></h1>
+        <p class="tagline gi-c-tagline">Got in? Pull the next one up.</p>
+        <p class="lede">Write the guide you wish someone had handed you. One Markdown file, 3 to 5 pillars, and your pillars become an animated explainer for the site, YouTube, and the Reels crowd.</p>
+      </div>
+    </section>
+
+    <section class="block">
+      <span class="label">// how it works</span>
+      <h2>Same template, every field</h2>
+      <ol class="gi-steps gi-c-steps">
+        <li><b>Pick a field you actually work in.</b> DevOps, DevSecOps, Platform Eng, data, cloud, whatever you do for a living.</li>
+        <li><b>Pick 3 to 5 pillars,</b> in the order someone should learn them. Shared foundations first, then the one last pillar that makes it <em>your</em> field. Cyber's is Security: "now learn how each layer breaks."</li>
+        <li><b>One free resource per pillar.</b> Something a student can start tonight without a credit card. Tools and a hands-on exercise are optional extras.</li>
+        <li><b>Write the rest:</b> a short intro, why this order, where to find your people, and how you got in. Short and honest beats long and polished.</li>
+        <li><b>Send it.</b> We edit for voice, render your video, and it goes live with your name on it.</li>
+      </ol>
+    </section>
+
+    <section class="block">
+      <span class="label">// voice</span>
+      <h2>Write it like you'd say it</h2>
+      <ul class="gi-c-voice">
+        <li><b>Casual and precise.</b> Talk like you're explaining it at the taquería, but get the tech right.</li>
+        <li><b>Code-switching welcome.</b> Spanglish is how a lot of us think. Use it.</li>
+        <li><b>No gatekeeping.</b> No 47-cert roadmaps, no "just get a CS degree." What actually worked.</li>
+        <li><b>Free first.</b> Every pillar needs at least one free way in.</li>
+        <li><b>Keep the animation lines short.</b> Pillar names up to about 12 characters, the one-liner up to about 48. They animate.</li>
+      </ul>
+    </section>
+
+    <section class="block" id="template">
+      <span class="label">// the template</span>
+      <div class="section-head">
+        <h2>Copy this</h2>
+        <button type="button" class="gi-icon-btn gi-c-copy"><span class="gi-c-copy-label">Copy template</span></button>
+      </div>
+      <p class="gi-c-note">Save it as <code>_getinto/<span class="gi-c-slug">your-field</span>.md</code>. Everything above the second <code>---</code> drives the card, the page, and the animation. Everything below it is your write-up, in plain Markdown.</p>
+      <pre class="gi-c-pre"><code class="gi-c-template">{{ starter | escape }}</code></pre>
+    </section>
+
+    <section class="block" id="submit">
+      <span class="label">// submit</span>
+      <h2>Two ways in</h2>
+      <div class="gi-c-ways">
+        <div class="gi-c-way">
+          <h3>Open a PR</h3>
+          <p>Fork <a class="inline" href="{{ repo }}" target="_blank" rel="noopener noreferrer">losnerdys-site</a>, add <code>_getinto/<span class="gi-c-slug">your-field</span>.md</code> and a square headshot in <code>assets/getinto/authors/</code>, and open a pull request. We'll render the video and merge.</p>
+          <div class="cta"><a class="btn btn-primary" href="{{ repo }}/new/main/_getinto?filename={{ 'your-field.md' }}" data-new-file target="_blank" rel="noopener noreferrer">Start the file on GitHub</a></div>
+        </div>
+        <div class="gi-c-way">
+          <h3>Not a Git person?</h3>
+          <p>All good. Fill in the template in any text editor and send it to John with your headshot. Markdown, a Google Doc, whatever. We'll do the rest.</p>
+          <div class="cta"><a class="btn btn-ghost" href="https://www.linkedin.com/in/johnmartinez/" target="_blank" rel="noopener noreferrer">Message John</a></div>
+        </div>
+      </div>
+    </section>
+
+  <script>
+  (function () {
+    var q = new URLSearchParams(location.search);
+    var slug = (q.get('campo') || '').toLowerCase().replace(/[^a-z0-9-]/g, '');
+    var titles = { {% for g in site.getinto %}{{ g.slug | jsonify }}: {{ g.title | jsonify }}{% unless forloop.last %}, {% endunless %}{% endfor %} };
+    var pre = document.querySelector('.gi-c-template');
+    var original = pre.textContent;
+    if (slug) {
+      var title = titles[slug] || slug.replace(/-/g, ' ').replace(/\b\w/g, function (c) { return c.toUpperCase(); });
+      document.querySelectorAll('.gi-c-slug').forEach(function (e) { e.textContent = slug; });
+      document.querySelector('.gi-c-tagline').textContent = 'Get Into ' + title + ' is waiting on you.';
+      pre.textContent = original.split('your-field').join(slug).split('Your Field').join(title);
+      var nf = document.querySelector('[data-new-file]');
+      if (nf) nf.href = nf.href.replace('your-field.md', slug + '.md');
+      document.title = 'Write Get Into ' + title + ' | Los Nerdys';
+    }
+    document.querySelector('.gi-c-copy').addEventListener('click', function () {
+      var label = this.querySelector('.gi-c-copy-label');
+      var done = function () { label.textContent = 'Copied'; setTimeout(function () { label.textContent = 'Copy template'; }, 1500); };
+      if (navigator.clipboard) navigator.clipboard.writeText(pre.textContent).then(done, done); else done();
+    });
+  })();
+  </script>

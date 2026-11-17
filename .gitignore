@@ -1,2 +1,10 @@
 spec.md
 .prep-drafts/
+_site/
+.jekyll-cache/
+.sass-cache/
+.bundle/
+vendor/
+.claude/
+tools/getinto-video/node_modules/
+.getinto-out/

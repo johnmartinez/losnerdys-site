@@ -1,0 +1,143 @@
+{%- comment -%}
+  One guide, rendered the same way on its standalone page and inside the /getinto/ popup.
+  params:
+    guide  the _getinto document
+    body   the guide's rendered Markdown (HTML)
+    mode   "page" (standalone, h1 in a hero) or "popup" (inside the <dialog> on /getinto/)
+{%- endcomment -%}
+{%- assign g = include.guide -%}
+{%- assign mode = include.mode | default: "page" -%}
+{%- assign title_up = g.title | upcase -%}
+{%- assign n = g.pillars | size -%}
+
+{%- if g.status == "live" -%}
+  {%- assign chunks = include.body | split: "<h2" -%}
+
+  {%- if mode == "page" %}
+    <section class="hero gi-hero gi-guide-hero">
+      <div class="hero-grid" aria-hidden="true"></div>
+      <div class="inner">
+        <p class="prompt" aria-hidden="true">~/los-nerdys $ ./getinto --campo={{ g.slug }}</p>
+        <h1 class="title">GET INTO {{ title_up }}<span class="cursor" aria-hidden="true">_</span></h1>
+        <p class="tagline">{{ g.blurb }}</p>
+        <p class="gi-m-meta">{{ n }} pilares · by {{ g.author }}</p>
+      </div>
+    </section>
+    <article class="block gi-guide">
+  {%- else %}
+    <p class="prompt" aria-hidden="true">~/los-nerdys $ ./getinto --campo={{ g.slug }}</p>
+    <h2 class="title" id="gi-m-title">GET INTO {{ title_up }}<span class="cursor" aria-hidden="true">_</span></h2>
+    <p class="tagline">{{ g.blurb }}</p>
+    <p class="gi-m-meta">{{ n }} pilares · by {{ g.author }}</p>
+  {%- endif %}
+
+  {%- if g.player %}
+    {%- capture player_title %}Get Into {{ g.title }}: the {{ n }} pillars, animated{% endcapture %}
+    {% include getinto-player.html player=g.player title=player_title wire=include.wire %}
+  {%- endif %}
+
+  {%- assign intro = chunks.first | strip -%}
+  {%- if intro != "" %}
+    <section class="gi-m-sec">
+      <span class="label">// intro</span>
+      {{ intro }}
+    </section>
+  {%- endif %}
+
+    <section class="gi-m-sec">
+      <span class="label">// pilares</span>
+      <h3>Learn these, in this order</h3>
+      <ol class="gi-pillars">
+      {%- for p in g.pillars %}
+        <li class="gi-pillar">
+          <div class="gi-p-top"><span class="gi-p-num">{% if forloop.index < 10 %}0{% endif %}{{ forloop.index }}</span><span class="gi-p-name">{{ p.name | upcase }}</span></div>
+          {{ p.detail | markdownify }}
+          {%- if p.resource %}
+          <a class="gi-start" href="{{ p.resource.url }}" target="_blank" rel="noopener noreferrer"><small>START TONIGHT</small>{{ p.resource.name }} ↗</a>
+          {%- endif %}
+          {%- if p.tools %}
+          <ul class="gi-tools">
+            {%- for t in p.tools %}
+            <li><a href="{{ t.url }}" target="_blank" rel="noopener noreferrer">{{ t.name }} ↗</a><span>{{ t.what }}</span></li>
+            {%- endfor %}
+          </ul>
+          {%- endif %}
+          {%- if p.exercise %}
+          <div class="gi-try"><small>TRY THIS</small>{{ p.exercise | markdownify }}</div>
+          {%- endif %}
+        </li>
+      {%- endfor %}
+      </ol>
+    </section>
+
+  {%- for c in chunks offset: 1 %}
+    {%- assign head = c | split: "</h2>" | first -%}
+    {%- assign label = head | split: ">" | last | strip | downcase -%}
+    {%- assign rest = c | remove_first: head | remove_first: "</h2>" %}
+    <section class="gi-m-sec">
+      <span class="label">// {{ label }}</span>
+      {{ rest | strip }}
+    </section>
+  {%- endfor %}
+
+    <section class="gi-m-sec">
+      <span class="label">// author</span>
+      <div class="gi-author">
+        {%- if g.author_photo %}
+        <img class="gi-avatar" src="{{ g.author_photo }}" alt="{{ g.author }}" width="96" height="96" loading="lazy">
+        {%- else %}
+        {%- assign names = g.author | split: " " %}
+        <div class="gi-avatar" aria-hidden="true">{{ names.first | slice: 0 }}{{ names.last | slice: 0 }}</div>
+        {%- endif %}
+        <div class="gi-author-text">
+          <b>{{ g.author }}</b>
+          {%- if g.author_role %}<span class="gi-author-role">{{ g.author_role }}</span>{% endif %}
+          {%- if g.author_bio %}
+          <p class="gi-author-bio">{{ g.author_bio }}</p>
+          {%- endif %}
+          {%- if g.author_links or g.podcast_episode %}
+          <ul class="gi-author-links">
+            {%- for l in g.author_links %}
+            <li><a href="{{ l.url }}" target="_blank" rel="noopener noreferrer">{{ l.label }} ↗</a></li>
+            {%- endfor %}
+            {%- if g.podcast_episode %}
+            {%- assign ep = g.podcast_episode %}
+            <li><a class="gi-ep" href="{{ ep.url | default: ep }}" target="_blank" rel="noopener noreferrer">{{ ep.label | default: "Hear the episode" }} ↗</a></li>
+            {%- endif %}
+          </ul>
+          {%- endif %}
+        </div>
+      </div>
+    </section>
+
+    <div class="gi-m-foot">
+      <div class="cta">
+        <a class="btn btn-primary" href="/getinto/contribute.html">Write the next one</a>
+        {%- if mode == "page" %}
+        <a class="btn btn-ghost" href="/getinto/">All the campos</a>
+        {%- else %}
+        <a class="btn btn-ghost" href="{{ g.url }}">Open full page</a>
+        {%- endif %}
+      </div>
+    </div>
+  {%- if mode == "page" %}
+    </article>
+  {%- endif %}
+
+{%- else -%}
+  {%- comment -%} status: soon. The popup uses the shared gi-tpl-soon template on /getinto/; this is the standalone page. {%- endcomment -%}
+    <section class="hero gi-hero gi-guide-hero">
+      <div class="hero-grid" aria-hidden="true"></div>
+      <div class="inner gi-soon-box">
+        <span class="gi-status">EN CAMINO</span>
+        <p class="prompt" aria-hidden="true">~/los-nerdys $ ./getinto --campo={{ g.slug }}</p>
+        <h1 class="title">GET INTO {{ title_up }}<span class="cursor" aria-hidden="true">_</span></h1>
+        <p class="tagline">{{ g.blurb }}</p>
+        <p class="gi-soon-note">This guide doesn't exist yet. If you work in this field, it could be yours.</p>
+        <div class="cta">
+          <a class="btn btn-primary" href="/getinto/contribute.html?campo={{ g.slug }}">¿La escribes tú?</a>
+          <a class="btn btn-ghost" href="/getinto/">See the other campos</a>
+        </div>
+      </div>
+    </section>
+{%- endif -%}

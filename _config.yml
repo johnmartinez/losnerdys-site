@@ -1,0 +1,30 @@
+title: Los Nerdys
+description: "Where latinidad and nerdiness intersect. Tech, cultura, y un chingo de curiosidad."
+url: https://losnerdys.tech
+baseurl: ""
+
+plugins:
+  - jekyll-redirect-from
+
+collections:
+  getinto:
+    output: true
+
+defaults:
+  - scope: { type: getinto }
+    values: { layout: guide, nav: getinto }
+
+exclude:
+  - tools
+  - reference
+  - HANDOFF.md
+  - README.md
+  - spec.md
+  - .prep-drafts
+  - .claude
+  - node_modules
+  - package.json
+  - package-lock.json
+  - Gemfile
+  - Gemfile.lock
+  - vendor
