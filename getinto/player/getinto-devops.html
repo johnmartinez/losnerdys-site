@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Get Into | Los Nerdys</title>
+<!-- GETINTO ENGINE v2 (2.5D, Three.js)
+     One deterministic timeline, two layouts (landscape 16:9, portrait 9:16).
+     Data comes from the #guide JSON block (filled by build.mjs).
+     Modes:
+       ?render&format=landscape|portrait  video renderer (Playwright steps renderAt(t))
+       ?embed[&format=...]                inside an iframe on the site: no switcher; parent can
+                                          postMessage {type:'getinto', format|replay}
+       (none)                             standalone page with Desktop | Mobile switcher
+     Frame 0 is a finished title frame. Web modes play once and hold on the finished stack
+     (no outro), with a player bar (restart, back, play/pause, forward, scrub, sound, volume).
+     Video mode ends on the logo outro.
+     postMessage from the parent: {type:'getinto', format, cmd:'play|pause|toggle|restart|next|prev', seek, muted, volume} -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@500;700&family=JetBrains+Mono:wght@400;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#0b0814; --surface:#161029; --line:#2b2145; --text:#ece7f7; --muted:#a59bbf;
+  --title:#39ff88; --rosa:#ff2d95; --cyan:#22e3f5; --marigold:#ffb11f; --violet:#9b5cff; --on-rosa:#12061a;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { width:100%; height:100%; overflow:hidden; background:var(--bg); }
+
+#viewport { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; }
+#switcher { position:fixed; top:14px; left:50%; transform:translateX(-50%); z-index:50;
+  display:flex; gap:4px; padding:4px; border-radius:999px;
+  background:color-mix(in srgb, var(--bg) 80%, transparent); backdrop-filter:blur(10px);
+  border:1px solid var(--line); font-family:'JetBrains Mono', monospace; font-size:13px; }
+#switcher button { all:unset; cursor:pointer; padding:6px 14px; border-radius:999px; color:var(--muted); font-weight:800; letter-spacing:.3px; }
+#switcher button:hover { color:var(--text); }
+#switcher button[aria-pressed="true"] { background:var(--rosa); color:var(--on-rosa); }
+#switcher button:focus-visible { outline:2px solid var(--cyan); outline-offset:2px; }
+.rendering #switcher, .embedded #switcher { display:none; }
+
+/* player bar */
+#controls { position:fixed; z-index:60; left:0; top:0; padding:6px 10px 8px; border-radius:14px; color:var(--text);
+  background:color-mix(in srgb, var(--bg) 80%, transparent); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+  border:1px solid var(--line); font-family:'JetBrains Mono', monospace; transition:opacity .25s ease; user-select:none; -webkit-user-select:none; }
+#controls[hidden], .rendering #controls { display:none; }
+#controls.auto { opacity:0; pointer-events:none; }
+#controls.auto.show { opacity:1; pointer-events:auto; }
+#scrub { position:relative; height:18px; cursor:pointer; touch-action:none; outline:none; }
+#scrubTrack { position:absolute; left:0; right:0; top:7px; height:4px; border-radius:99px; background:rgba(165,155,191,.28); overflow:hidden; }
+#scrubFill { position:absolute; left:0; top:0; bottom:0; width:0; background:linear-gradient(90deg, var(--cyan), var(--violet), var(--rosa), var(--title)); background-size:var(--scrub-w, 600px) 100%; }
+#scrubTicks i { position:absolute; top:0; bottom:0; width:2px; margin-left:-1px; background:var(--bg); }
+#scrubKnob { position:absolute; top:3px; width:12px; height:12px; margin-left:-6px; border-radius:99px; background:var(--text); box-shadow:0 0 10px rgba(255,45,149,.7); }
+#scrub:focus-visible #scrubKnob { outline:2px solid var(--cyan); outline-offset:2px; }
+#controls .crow { display:flex; align-items:center; gap:4px; margin-top:2px; }
+#controls button { all:unset; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:6px; height:38px; min-width:38px; border-radius:99px; color:var(--text); }
+#controls button:hover { color:var(--rosa); background:rgba(255,255,255,.05); }
+#controls button:focus-visible { outline:2px solid var(--cyan); outline-offset:-2px; }
+#controls svg { width:22px; height:22px; fill:currentColor; display:block; }
+#controls #cPlay { background:var(--rosa); color:var(--on-rosa); margin:0 2px; }
+#controls #cPlay:hover { background:var(--rosa); color:var(--on-rosa); box-shadow:0 0 16px rgba(255,45,149,.6); }
+#controls[data-state="playing"] .i-play, #controls:not([data-state="playing"]) .i-pause { display:none; }
+#controls[data-sound="on"] .i-off, #controls:not([data-sound="on"]) .i-on { display:none; }
+#controls #cMute { padding:0 10px 0 8px; }
+#cMute .lbl { font-size:12px; font-weight:800; letter-spacing:.3px; }
+#controls:not([data-sound="on"]) #cMute { color:var(--marigold); box-shadow:inset 0 0 0 1px rgba(255,177,31,.55); }
+#controls[data-sound="on"] #cMute .lbl { display:none; }
+#controls[data-sound="on"] #cMute, #cTime { font-size:13px; color:var(--muted); margin-left:8px; white-space:nowrap; font-variant-numeric:tabular-nums; }
+#controls .grow { flex:1; }
+#cVol { width:92px; height:22px; accent-color:var(--rosa); cursor:pointer; margin:0 4px 0 2px; }
+#controls.compact button { height:36px; min-width:34px; }
+#controls.compact #cTime { display:none; }
+#controls.compact #cVol { width:64px; }
+#controls.compact #cMute .lbl { display:none; }
+#controls.noaudio #cMute, #controls.noaudio #cVol { display:none; }
+
+#stage { position:relative; flex:none; overflow:hidden; background:var(--bg);
+  font-family:'Figtree', sans-serif; color:var(--text); transform-origin:center center; }
+.landscape #stage { width:1280px; height:720px; }
+.portrait  #stage { width:1080px; height:1920px; }
+.layer { position:absolute; inset:0; pointer-events:none; }
+.mono { font-family:'JetBrains Mono', monospace; }
+#gl { position:absolute; inset:0; width:100%; height:100%; display:block; }
+#glowA { background: radial-gradient(60% 45% at 10% 6%, rgba(255,45,149,.20), transparent 70%); mix-blend-mode:screen; }
+#glowB { background: radial-gradient(60% 45% at 94% 96%, rgba(34,227,245,.13), transparent 70%); mix-blend-mode:screen; }
+#scan { background: repeating-linear-gradient(0deg, rgba(255,255,255,.028) 0 1px, transparent 1px 3px); }
+#vignette { background: radial-gradient(ellipse at center, transparent 52%, rgba(0,0,0,.6) 100%); }
+#fx { position:absolute; inset:0; width:100%; height:100%; overflow:visible; pointer-events:none; }
+#fx path { fill:none; stroke-linecap:round; stroke-linejoin:round; }
+.cursor { display:inline-block; width:.58em; height:1em; vertical-align:-0.12em; background:var(--title); margin-left:.06em; }
+
+/* logo: one element, moved between title / header / outro poses */
+#cal { position:absolute; left:0; top:0; transform-origin:0 0; z-index:6; will-change:transform;
+  filter: drop-shadow(0 0 22px rgba(255,45,149,.45)) drop-shadow(0 0 46px rgba(34,227,245,.18)); }
+
+/* title frame */
+#titleCard { position:absolute; transform-origin:0 0; z-index:3; }
+#prompt { color:var(--muted); white-space:pre; }
+#prompt .p { color:var(--cyan); } #prompt .c { color:var(--text); }
+#title { font-weight:800; color:var(--title); white-space:pre; line-height:1.0;
+  text-shadow:0 0 20px rgba(57,255,136,.5), 0 0 54px rgba(57,255,136,.28); }
+#sub { font-weight:700; } #sub b { color:var(--rosa); font-weight:700; }
+
+/* header while the stack builds */
+#header { position:absolute; z-index:3; white-space:pre; }
+#hTitle { font-weight:800; color:var(--title); text-shadow:0 0 14px rgba(57,255,136,.45); }
+#pips { position:absolute; z-index:3; display:flex; align-items:center; }
+#pips .pip { position:relative; border-radius:99px; background:rgba(165,155,191,.22); overflow:hidden; }
+#pips .pip i { position:absolute; left:0; top:0; bottom:0; border-radius:99px; }
+#pips .count { color:var(--muted); font-weight:800; }
+
+/* focus card: one pillar at a time */
+#card { position:absolute; z-index:3; border-radius:18px; background:rgba(22,16,41,.90); border:1px solid var(--line);
+  box-shadow: 0 0 0 1px rgba(255,255,255,.02), 0 18px 50px rgba(0,0,0,.5); overflow:hidden; }
+#card .bar { position:absolute; left:0; top:0; bottom:0; }
+#card .top { display:flex; align-items:baseline; white-space:nowrap; }
+#card .num { font-weight:800; color:var(--marigold); }
+#card .name { font-weight:800; letter-spacing:-1px; }
+#card .count { margin-left:auto; color:var(--muted); font-weight:800; }
+#card .desc { font-weight:500; line-height:1.3; }
+#card .desc span { display:inline-block; white-space:pre; }
+
+/* recap rows */
+#rows { position:absolute; left:0; top:0; z-index:3; }
+.row { position:absolute; white-space:nowrap; display:flex; }
+.row .rnum { font-family:'JetBrains Mono', monospace; font-weight:800; color:var(--marigold); }
+.row .rname { font-family:'JetBrains Mono', monospace; font-weight:800; letter-spacing:-.5px; }
+.row .rdesc { font-weight:500; }
+#why { position:absolute; z-index:3; color:var(--muted); white-space:pre; }
+#why .k { color:var(--title); font-weight:800; text-shadow:0 0 12px rgba(57,255,136,.4); }
+
+/* outro */
+#outroBg { background: rgba(11,8,20,.93); z-index:5; }
+#url { position:absolute; left:0; right:0; text-align:center; z-index:6; font-weight:800; color:var(--title);
+  text-shadow:0 0 16px rgba(57,255,136,.45); white-space:pre; }
+#tag { position:absolute; left:0; right:0; text-align:center; z-index:6; font-weight:700; color:var(--rosa);
+  letter-spacing:3px; text-transform:uppercase; }
+#vignette, #scan { z-index:8; }
+
+/* ---------- landscape 1280x720 ---------- */
+.landscape #titleCard { left:80px; top:228px; }
+.landscape #prompt { font-size:23px; }
+.landscape #title { font-size:118px; letter-spacing:-3px; margin-top:12px; }
+.landscape #sub { font-size:30px; margin-top:18px; }
+.landscape #header { left:164px; top:50px; }
+.landscape #hTitle { font-size:32px; letter-spacing:-.5px; }
+.landscape #pips { right:80px; top:62px; gap:8px; }
+.landscape #pips .pip { width:54px; height:8px; }
+.landscape #pips .count { font-size:16px; margin-left:8px; }
+.landscape #card { left:700px; width:500px; padding:30px 36px 32px 44px; }
+.landscape #card .bar { width:7px; }
+.landscape #card .top { gap:16px; }
+.landscape #card .num { font-size:30px; }
+.landscape #card .name { font-size:56px; }
+.landscape #card .count { font-size:16px; }
+.landscape #card .desc { font-size:31px; margin-top:14px; }
+.landscape .row { align-items:baseline; gap:14px; }
+.landscape .row .rnum { font-size:21px; }
+.landscape .row .rname { display:none; }
+.landscape .row .rdesc { font-size:27px; }
+.landscape #why { font-size:24px; }
+.landscape #url { top:428px; font-size:36px; }
+.landscape #tag { top:490px; font-size:22px; }
+
+/* ---------- portrait 1080x1920 ----------
+   Content stays inside the IG/TikTok/Shorts safe zone:
+   clear of the top ~200px, bottom ~380px (captions, buttons), right ~120px (like/share rail). */
+.portrait #titleCard { left:72px; top:408px; }
+.portrait #prompt { font-size:33px; }
+.portrait #title { font-size:164px; letter-spacing:-5px; margin-top:16px; }
+.portrait #sub { font-size:44px; margin-top:24px; }
+.portrait #header { left:186px; top:230px; }
+.portrait #hTitle { font-size:50px; letter-spacing:-1px; }
+.portrait #pips { left:72px; top:334px; gap:12px; }
+.portrait #pips .pip { width:120px; height:12px; }
+.portrait #pips .count { font-size:26px; margin-left:14px; }
+.portrait #card { left:72px; width:888px; padding:44px 48px 48px 62px; border-radius:24px; }
+.portrait #card .bar { width:11px; }
+.portrait #card .top { gap:24px; }
+.portrait #card .num { font-size:50px; }
+.portrait #card .name { font-size:96px; letter-spacing:-2px; }
+.portrait #card .count { font-size:26px; }
+.portrait #card .desc { font-size:53px; margin-top:20px; }
+.portrait .row { flex-wrap:wrap; align-items:baseline; column-gap:18px; row-gap:4px; padding-left:26px; border-left:8px solid; }
+.portrait .row .rnum { font-size:36px; }
+.portrait .row .rname { font-size:42px; }
+.portrait .row .rdesc { flex-basis:100%; font-size:37px; }
+.portrait #why { font-size:34px; }
+.portrait #url { top:1050px; font-size:58px; }
+.portrait #tag { top:1140px; font-size:36px; }
+</style>
+</head>
+<body class="landscape">
+<script id="guide" type="application/json">{"slug":"devops","title":"DevOps","short":"DevOps","pillars":[{"name":"Foundations","desc":"OS, networking, code, AI. Start there."},{"name":"Cloud","desc":"Pick one. AWS, Azure o GCP. Learn it well."},{"name":"Containers","desc":"Docker first. Then Kubernetes."},{"name":"Pipelines","desc":"Git, CI/CD, infrastructure as code."},{"name":"Run it","desc":"You build it, you run it."}]}</script>
+<nav id="switcher" aria-label="Video format">
+  <button type="button" data-fmt="landscape" aria-pressed="false">Desktop</button>
+  <button type="button" data-fmt="portrait" aria-pressed="false">Mobile</button>
+</nav>
+<!-- player bar (web only): restart, back, play/pause, forward, scrub, sound, volume -->
+<div id="controls" hidden>
+  <div id="scrub" role="slider" tabindex="0" aria-label="Seek" aria-valuemin="0"><div id="scrubTrack"><div id="scrubFill"></div><div id="scrubTicks"></div></div><div id="scrubKnob"></div></div>
+  <div class="crow">
+    <button type="button" id="cRestart" aria-label="Restart" title="Restart (R)"><svg viewBox="0 0 24 24"><path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/></svg></button>
+    <button type="button" id="cPrev" aria-label="Back one step" title="Back one step (left arrow)"><svg viewBox="0 0 24 24"><path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6l-8.5 6z"/></svg></button>
+    <button type="button" id="cPlay" aria-label="Pause" title="Play / pause (space)"><svg class="i-pause" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg><svg class="i-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>
+    <button type="button" id="cNext" aria-label="Forward one step" title="Forward one step (right arrow)"><svg viewBox="0 0 24 24"><path d="M4 18l8.5-6L4 6v12zm9-12v12l8.5-6L13 6z"/></svg></button>
+    <span id="cTime">0:00 / 0:00</span>
+    <span class="grow"></span>
+    <button type="button" id="cMute" aria-label="Turn sound on" aria-pressed="false" title="Sound on / off (M)"><svg class="i-on" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg><svg class="i-off" viewBox="0 0 24 24"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg><span class="lbl">Sound</span></button>
+    <input id="cVol" type="range" min="0" max="1" step="0.01" value="0.8" aria-label="Volume" title="Volume">
+  </div>
+</div>
+<div id="viewport">
+<div id="stage">
+  <canvas id="gl"></canvas>
+  <div class="layer" id="glowA"></div>
+  <div class="layer" id="glowB"></div>
+  <svg id="fx" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="arrowGrad" gradientUnits="userSpaceOnUse" x1="0" y1="1" x2="0" y2="0">
+        <stop offset="0" stop-color="#22e3f5"/><stop offset=".4" stop-color="#9b5cff"/><stop offset=".7" stop-color="#ff2d95"/><stop offset="1" stop-color="#39ff88"/>
+      </linearGradient>
+    </defs>
+    <path id="conn" stroke-width="2.5"/>
+    <circle id="connDot" r="5"/>
+    <g id="rconns"></g>
+    <path id="arrow" stroke="url(#arrowGrad)" stroke-width="4"/>
+    <path id="arrowHead" stroke="#39ff88" stroke-width="4"/>
+  </svg>
+  <div id="titleCard">
+    <div id="prompt" class="mono"></div>
+    <div id="title" class="mono"></div>
+    <div id="sub"></div>
+  </div>
+  <div id="header"><div id="hTitle" class="mono"></div></div>
+  <div id="pips"></div>
+  <div id="card">
+    <div class="bar"></div>
+    <div class="top"><span class="num mono"></span><span class="name mono"></span><span class="count mono"></span></div>
+    <div class="desc"></div>
+  </div>
+  <div id="rows"></div>
+  <div id="why" class="mono"></div>
+  <div class="layer" id="outroBg"></div>
+  <div id="url" class="mono"></div>
+  <div id="tag">El Futuro es Nuestro</div>
+  <img id="cal" src="/assets/calavera.png" alt="Los Nerdys calavera">
+  <div class="layer" id="vignette"></div>
+  <div class="layer" id="scan"></div>
+</div>
+</div>
+<script>window.GETINTO_AUDIO = "getinto-devops.mp3";</script>
+<script src="getinto-engine.js"></script>
+</body>
+</html>
