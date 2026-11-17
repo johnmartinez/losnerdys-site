@@ -18,8 +18,12 @@ the card on `/getinto/`, the guide page, the popup, and the animation.
    `getinto-engine.js`. Regenerate whenever the pillars change.
 3. Commit and push. Pages builds the card, the page, and the popup.
 
-Social cuts (not committed): `node tools/getinto-video/build.mjs _getinto/<slug>.md --out .getinto-out`
-writes a 1920x1080 and a 1080x1920 MP4 with sound (needs `npx playwright install chromium`).
+Social cuts: `node tools/getinto-video/build.mjs _getinto/<slug>.md --out .getinto-out`
+writes a 1920x1080 and a 1080x1920 MP4 with sound (needs `npx playwright install chromium`;
+the Playwright package and its Chromium build must match). To put them on the site, copy
+`getinto-<slug>-landscape.mp4` and `getinto-<slug>-portrait.mp4` into `getinto/video/`.
+The guide page and popup show download links for whichever of the two exist, so nothing
+in the guide's front matter changes.
 
 ## Rules
 

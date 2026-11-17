@@ -36,6 +36,26 @@
     {% include getinto-player.html player=g.player title=player_title wire=include.wire %}
   {%- endif %}
 
+  {%- comment %} Downloadable cuts, if they've been rendered into getinto/video/ (found by name, so nothing to add to the guide). {% endcomment %}
+  {%- capture vid_land %}/getinto/video/getinto-{{ g.slug }}-landscape.mp4{% endcapture %}
+  {%- capture vid_port %}/getinto/video/getinto-{{ g.slug }}-portrait.mp4{% endcapture %}
+  {%- assign has_land = false %}{% assign has_port = false %}
+  {%- for f in site.static_files %}
+    {%- if f.path == vid_land %}{% assign has_land = true %}{% endif %}
+    {%- if f.path == vid_port %}{% assign has_port = true %}{% endif %}
+  {%- endfor %}
+  {%- if has_land or has_port %}
+    <div class="gi-videos">
+      <span class="gi-videos-label">// el video</span>
+      {%- if has_land %}
+      <a href="{{ vid_land }}" download><b>16:9</b> Landscape · YouTube ↓</a>
+      {%- endif %}
+      {%- if has_port %}
+      <a href="{{ vid_port }}" download><b>9:16</b> Vertical · Reels, TikTok, Shorts ↓</a>
+      {%- endif %}
+    </div>
+  {%- endif %}
+
   {%- assign intro = chunks.first | strip -%}
   {%- if intro != "" %}
     <section class="gi-m-sec">
