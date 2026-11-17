@@ -505,10 +505,14 @@ const ctl = RENDER ? null : $('controls');
 function fit() {
   if (RENDER) { el.stage.style.transform = 'none'; fitScale = 1; }
   else {
-    // standalone page: room for the format switch on top, and in landscape for the player bar underneath
-    const top = EMBED ? 0 : 64, bottom = (!EMBED && fmt === 'landscape') ? 100 : 0;
-    fitScale = Math.min(window.innerWidth / L.W, (window.innerHeight - top - bottom) / L.H);
-    el.stage.style.transform = `translateY(${(top - bottom) / 2}px) scale(${fitScale})`;
+    // Standalone page: room for the format switch on top. Landscape, standalone or embedded: a band under the
+    // picture for the player bar, so the bar never sits on the stack. Portrait keeps the bar in its empty safe zone.
+    const land = fmt === 'landscape';
+    const top = EMBED ? 0 : 64, bottom = !land ? 0 : EMBED ? barBand() : 100;
+    fitScale = Math.min(window.innerWidth / L.W, Math.max(1, window.innerHeight - top - bottom) / L.H);
+    // embedded landscape: the picture stays flush to the top, so the only thing under it is the bar's band
+    const dy = (EMBED && land) ? (L.H * fitScale - window.innerHeight) / 2 : (top - bottom) / 2;
+    el.stage.style.transform = `translateY(${dy}px) scale(${fitScale})`;
   }
   const pr = RENDER ? window.devicePixelRatio : clamp(window.devicePixelRatio * fitScale, 0.6, 2);
   renderer.setPixelRatio(pr); renderer.setSize(L.W, L.H, false);
@@ -601,6 +605,8 @@ function next() { const ch = CHAPTERS.find(c => c.t > P.t + 0.05); seek(ch ? ch.
 const ui = {};
 let hideTimer = 0, lastTxt = '', lastState = '', lastAud = null;
 const fmtTime = s => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+// Auto-hide only applies while the bar has the .auto class. No mode sets it today (the bar always has its own
+// space), so poke() is a no-op on screen; it stays so a future mode that overlays the bar can switch it back on.
 function poke() {
   if (!ctl) return;
   ctl.classList.add('show'); clearTimeout(hideTimer);
@@ -609,16 +615,27 @@ function poke() {
     ctl.classList.remove('show');
   }, 2800);
 }
+// Embedded landscape: the height of the band fit() keeps free under the picture = the bar + a gap above and below it.
+// Measured from the real bar at its full (not .compact) height, so the band never depends on the scale it produces.
+// Today that is 74 + 6 + 4 = 84 px, which is the band the site adds under its 16:9 iframe.
+const BAR_GAP = 6, BAR_FOOT = 4;
+function barBand() {
+  const compact = ctl.classList.contains('compact');
+  ctl.classList.remove('compact');
+  const h = ctl.offsetHeight;
+  ctl.classList.toggle('compact', compact);
+  return h + BAR_GAP + BAR_FOOT;
+}
 function placeControls() {
   const r = el.stage.getBoundingClientRect();
   const w = Math.min(r.width - 16, 760);
   ctl.classList.toggle('compact', w < 440);
   ctl.style.width = w + 'px'; ctl.style.left = (r.left + (r.width - w) / 2) + 'px'; ctl.style.setProperty('--scrub-w', (w - 22) + 'px');
-  const below = !EMBED && fmt === 'landscape';              // standalone landscape: under the picture
+  const below = fmt === 'landscape';                        // landscape, standalone or embedded: under the picture
   const h = ctl.offsetHeight;
-  // portrait: in the empty band at the bottom (the social safe zone). Embedded landscape: over the bottom edge, auto-hiding.
-  ctl.style.top = (below ? r.bottom + 10 : fmt === 'portrait' ? r.bottom - h - r.height * 0.03 : r.bottom - h - 8) + 'px';
-  ctl.classList.toggle('auto', !below && fmt === 'landscape');
+  // portrait: over the picture, in the empty band at its bottom (the social safe zone)
+  ctl.style.top = (below ? r.bottom + (EMBED ? BAR_GAP : 10) : r.bottom - h - r.height * 0.03) + 'px';
+  ctl.classList.remove('auto');                             // the bar never covers the stack now, so it never auto-hides
 }
 function updateUI() {
   const k = (P.t / END * 100).toFixed(2) + '%';
@@ -668,7 +685,7 @@ function buildControls() {
     else if (k === 'm') setSound(!A.audible()); else if (k === 'r' || k === 'home') restart(); else return;
     e.preventDefault();
   });
-  // the picture itself: click to pause/play; on an embedded landscape player a first tap brings the bar back
+  // the picture itself: click to pause/play (if the bar is ever auto-hidden, a first tap brings it back instead)
   el.stage.addEventListener('click', () => {
     if (performance.now() - unlockedAt < 500) return;         // that tap just brought the sound back; don't also pause
     if (ctl.classList.contains('auto') && !ctl.classList.contains('show')) poke(); else toggle();
