@@ -1,0 +1,46 @@
+name: Site check
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3"
+          bundler-cache: true
+
+      - name: Jekyll build (same gems as GitHub Pages)
+        run: bundle exec jekyll build
+
+      - name: episode-prep passes through untouched
+        run: |
+          for f in episode-prep/*; do cmp "$f" "_site/$f"; done
+          node tools/lock-prep.mjs --check
+
+      - name: Every live guide has its player
+        run: |
+          fail=0
+          for g in _getinto/*.md; do
+            grep -q '^status: live' "$g" || continue
+            p=$(sed -n 's/^player: *//p' "$g" | tr -d '"' | sed 's#^/##')
+            if [ -z "$p" ] || [ ! -f "$p" ]; then echo "::error file=$g::missing player $p"; fail=1; continue; fi
+            if [ "$(git log -1 --format=%ct -- "$g")" -gt "$(git log -1 --format=%ct -- "$p")" ]; then
+              echo "::warning file=$g::$g changed after its player; regenerate with tools/getinto-video/build.mjs"
+            fi
+          done
+          exit $fail
+
+      - name: No em dashes in site copy
+        run: |
+          if grep -rn "—" _getinto _includes _layouts getinto/*.html index.html; then
+            echo "::error::Em dash found. Use a comma, colon, or period instead."; exit 1
+          fi
