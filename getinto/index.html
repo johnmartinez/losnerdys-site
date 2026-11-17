@@ -15,6 +15,12 @@ og_description: "How do I get into...? Straight answers from people who got in."
         <h1 class="title">GET INTO<span class="cursor" aria-hidden="true">_</span></h1>
         <p class="tagline">"How do I get into...?" Straight answers from people who got in.</p>
         <p class="lede">Each guide is the short list of what to learn, in what order, and where to start tonight. No gatekeeping, no 47-cert roadmap.</p>
+        {%- if site.getinto_playlist %}
+        <div class="gi-videos">
+          <span class="gi-videos-label">// los videos</span>
+          <a href="{{ site.getinto_playlist }}" target="_blank" rel="noopener noreferrer"><b>YouTube</b> Watch the playlist ↗</a>
+        </div>
+        {%- endif %}
       </div>
     </section>
 

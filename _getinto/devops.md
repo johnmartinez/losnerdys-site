@@ -109,6 +109,7 @@ pillars:
 
 # ---- videos (rendered with tools/getinto-video) ----
 player: /getinto/player/getinto-devops.html
+youtube: https://www.youtube.com/watch?v=LeGpnRPP0pg   # the landscape cut on YouTube, linked under the player
 ---
 
 <!-- Intro: who this is for, what the work looks like. -->

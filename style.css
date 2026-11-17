@@ -444,10 +444,11 @@ img.gi-avatar { width: 96px; height: 96px; object-fit: cover; padding: 0; box-sh
 .gi-m-sec > p + p { margin-top: 12px; }
 .gi-m-sec > p code, .gi-m-sec > ul code { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: .9em; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 1px 6px; color: var(--title); }
 
-/* Get Into: downloadable video cuts under the player */
+/* Get Into: YouTube links (a guide's video under its player, the playlist in the /getinto/ hero) */
 .gi-videos { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; margin-top: 14px; }
 .gi-videos-label { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: .8rem; color: var(--cyan); margin-right: 4px; }
 .gi-videos a { display: inline-flex; align-items: baseline; gap: 8px; padding: 6px 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface);
   font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: .78rem; font-weight: 600; color: var(--text); }
 .gi-videos a b { color: var(--marigold); font-weight: 800; }
 .gi-videos a:hover { border-color: var(--rosa); color: var(--rosa); }
+.gi-hero .gi-videos { margin-top: 22px; }

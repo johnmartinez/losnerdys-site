@@ -95,8 +95,9 @@ pillars:
       - { name: "TryHackMe", what: "Guided, browser-based labs. The gentlest on-ramp, with plenty you can do for free.", url: "https://tryhackme.com/" }
       - { name: "Hack The Box", what: "Less hand-holding, more puzzle. Go here once the guided rooms feel easy.", url: "https://www.hackthebox.com/" }
 
-# ---- videos (rendered with tools/getinto-video, see HANDOFF.md) ----
+# ---- videos (rendered with tools/getinto-video) ----
 player: /getinto/player/getinto-cyber.html
+youtube: https://www.youtube.com/watch?v=8V6oNRitww8   # the landscape cut on YouTube, linked under the player
 ---
 
 <!-- Intro: who this is for, what the work looks like. -->

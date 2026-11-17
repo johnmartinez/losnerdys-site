@@ -20,10 +20,15 @@ the card on `/getinto/`, the guide page, the popup, and the animation.
 
 Social cuts: `node tools/getinto-video/build.mjs _getinto/<slug>.md --out .getinto-out`
 writes a 1920x1080 and a 1080x1920 MP4 with sound (needs `npx playwright install chromium`;
-the Playwright package and its Chromium build must match). To put them on the site, copy
-`getinto-<slug>-landscape.mp4` and `getinto-<slug>-portrait.mp4` into `getinto/video/`.
-The guide page and popup show download links for whichever of the two exist, so nothing
-in the guide's front matter changes.
+the Playwright package and its Chromium build must match).
+
+Where the videos live: the landscape cut goes on YouTube and into the Get Into playlist.
+Put its link in the guide's front matter as `youtube: https://www.youtube.com/watch?v=...`
+and the guide page and popup show a "Watch the video" link under the player. The playlist
+link on `/getinto/` is `getinto_playlist` in `_config.yml`. The portrait cut is for
+Instagram and TikTok. Copies of both cuts are kept in `getinto/video/` as
+`getinto-<slug>-landscape.mp4` and `getinto-<slug>-portrait.mp4`: they are served at that
+URL for direct use, but no page links to them.
 
 ## Rules
 
