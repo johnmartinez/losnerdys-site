@@ -329,7 +329,10 @@ html.gi-locked { overflow: hidden; }
 .gi-player { margin: 0 auto; border-radius: 14px; overflow: hidden; border: 1px solid var(--line); background: #0b0814;
   box-shadow: 0 0 0 1px var(--line), 0 0 40px var(--glow-a); }
 .gi-player iframe { display: block; width: 100%; height: 100%; border: 0; }
-.gi-player[data-format="landscape"] { aspect-ratio: 16 / 9; width: 100%; }
+/* landscape: a 16:9 picture plus an 84 px band under it for the player bar (the engine keeps the bar in that band) */
+.gi-player[data-format="landscape"] { --gi-bar-band: 84px; position: relative; width: 100%; height: 0; aspect-ratio: auto;
+  padding-bottom: calc((100% - 2px) * 9 / 16 + var(--gi-bar-band)); }
+.gi-player[data-format="landscape"] iframe { position: absolute; inset: 0; }
 .gi-player[data-format="portrait"]  { aspect-ratio: 9 / 16; width: min(100%, calc(min(72vh, 720px) * 9 / 16)); }
 
 /* soon popup */
