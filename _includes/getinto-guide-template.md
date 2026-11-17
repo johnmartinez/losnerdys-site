@@ -46,6 +46,7 @@ pillars:
     resource: { name: "One free resource", url: "https://..." }
 
 player: /getinto/player/getinto-your-field.html
+youtube:                         # optional: https://www.youtube.com/watch?v=... once the video is up
 ---
 
 Who this field is for, and what the work actually looks like day to day.

@@ -3,6 +3,9 @@ description: "Where latinidad and nerdiness intersect. Tech, cultura, y un ching
 url: https://losnerdys.tech
 baseurl: ""
 
+# Get Into: the YouTube playlist, linked from /getinto/. Each guide links its own video with `youtube:` in its front matter.
+getinto_playlist: https://www.youtube.com/playlist?list=PLdnjw6x8ktc0
+
 plugins:
   - jekyll-redirect-from
 
