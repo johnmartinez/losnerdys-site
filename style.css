@@ -438,3 +438,7 @@ img.gi-avatar { width: 96px; height: 96px; object-fit: cover; padding: 0; box-sh
 .gi-c-way p { color: var(--muted); }
 .gi-c-way .cta { margin-top: auto; padding-top: 6px; justify-content: flex-start; }
 @media (max-width: 720px) { .gi-c-ways { grid-template-columns: 1fr; } }
+
+/* guide body prose: paragraph spacing and inline code */
+.gi-m-sec > p + p { margin-top: 12px; }
+.gi-m-sec > p code, .gi-m-sec > ul code { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: .9em; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 1px 6px; color: var(--title); }

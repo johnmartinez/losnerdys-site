@@ -115,6 +115,14 @@ you don't understand.
 - Go bigger when you can: SecTor, BSides, regional cons. Expo or business
   passes are often free or cheap.
 
-<!-- TODO (John): your path, short and honest. Uncomment the heading when it's written.
 ## How I got in
--->
+Hacking. Literally. I was learning to automate on SunOS and Solaris when I came
+across `.rhosts` vulnerabilities and tried them out in real life. I did the
+ethical thing and reported them, and soon afterward I was working as a UNIX
+sysadmin. (There was more to it than that, of course.)
+
+Since then I've worked in and around cyber my whole career. I've been a firewall
+administrator. I did cloud security in the early days of the cloud, because
+nobody else knew how. I helped sell Cloud Security Posture Management (CSPM) at
+Evident.io when that category was brand new. Today I work in identity security
+as a Tech Evangelist at Delinea, by way of StrongDM.
