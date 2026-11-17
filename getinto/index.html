@@ -1,0 +1,212 @@
+---
+layout: default
+nav: getinto
+title: Get Into
+description: "How do I get into tech? Straight answers from people who got in. Cyber, DevOps, DevSecOps, Platform Engineering."
+og_description: "How do I get into...? Straight answers from people who got in."
+---
+{%- assign guides = site.getinto | sort: "order" -%}
+{%- assign live = guides | where: "status", "live" -%}
+{%- assign soon = guides | where: "status", "soon" -%}
+    <section class="hero gi-hero">
+      <div class="hero-grid" aria-hidden="true"></div>
+      <div class="inner">
+        <p class="prompt" aria-hidden="true">~/los-nerdys $ ls ./getinto</p>
+        <h1 class="title">GET INTO<span class="cursor" aria-hidden="true">_</span></h1>
+        <p class="tagline">"How do I get into...?" Straight answers from people who got in.</p>
+        <p class="lede">Each guide is the short list of what to learn, in what order, and where to start tonight. No gatekeeping, no 47-cert roadmap.</p>
+      </div>
+    </section>
+
+    <section id="campos" class="block">
+      <span class="label">// campos</span>
+      <div class="section-head">
+        <h2>Pick your field</h2>
+        <a class="all" href="/getinto/contribute.html">Write one →</a>
+      </div>
+
+      <!-- Generated from the _getinto collection: live guides first, then en camino. -->
+      <div class="gi-grid">
+      {%- for g in live %}
+        {%- assign n = g.pillars | size %}
+        <a class="card gi-card gi-live" href="{{ g.url }}" data-campo="{{ g.slug }}" data-title="{{ g.title }}">
+          <div class="gi-term" aria-hidden="true">
+            <span class="gi-cmd"><b>$</b> ./getinto<br>--campo={{ g.slug }}</span>
+            <span class="gi-stack">{% for p in g.pillars %}<i></i>{% endfor %}</span>
+          </div>
+          <h3>{{ g.title }}</h3>
+          <p>{{ g.blurb }}</p>
+          <div class="gi-meta"><span>{{ n }} pilares · {{ g.author_short | default: g.author }}</span><span class="gi-status">LIVE</span></div>
+        </a>
+      {%- endfor %}
+      {%- for g in soon %}
+        <a class="card gi-card gi-soon" href="/getinto/contribute.html?campo={{ g.slug }}" data-campo="{{ g.slug }}" data-title="{{ g.title }}" data-blurb="{{ g.blurb | escape }}">
+          <div class="gi-term" aria-hidden="true">
+            <span class="gi-cmd"><b>$</b> ./getinto<br>--campo={{ g.slug }}</span>
+            <span class="gi-stack"><i></i><i></i><i></i><i></i></span>
+          </div>
+          <h3>{{ g.title }}</h3>
+          <p>{{ g.blurb }}</p>
+          <div class="gi-meta"><span class="gi-write">¿La escribes tú? →</span><span class="gi-status">EN CAMINO</span></div>
+        </a>
+      {%- endfor %}
+      </div>
+    </section>
+
+    <section id="contribute" class="block">
+      <span class="label">// contribute</span>
+      <div class="gi-contribute">
+        <div>
+          <h2>Got in? Pull the next one up.</h2>
+          <p style="color:var(--muted);font-size:1.1rem;max-width:560px">Write the guide you wish someone had handed you. Same template every time: your pillars, why that order, one free resource per pillar, and how you got in.</p>
+          <div class="cta">
+            <a class="btn btn-primary" href="/getinto/contribute.html">Write a guide</a>
+            <a class="btn btn-ghost" href="https://www.youtube.com/@losnerdys" target="_blank" rel="noopener noreferrer">Hear the podcast</a>
+          </div>
+        </div>
+        <ol class="gi-steps">
+          <li><b>Pick a field</b> you actually work in.</li>
+          <li><b>Fill the template</b> in Markdown. 3 to 5 pillars.</li>
+          <li><b>Open a PR</b> or send it over. We edit for voice.</li>
+          <li><b>Get your video.</b> Your pillars become the animation.</li>
+        </ol>
+      </div>
+    </section>
+
+  <!-- One dialog, filled from the campo's <template> on open. -->
+  <dialog class="gi-modal" id="gi-modal" aria-labelledby="gi-m-title">
+    <div class="gi-m-head">
+      <span class="gi-cmd"><b>$</b> ./getinto --campo=<span class="gi-m-slug"></span></span>
+      <div class="gi-m-actions">
+        <button type="button" class="gi-icon-btn gi-copy" title="Copy link"><span aria-hidden="true">&#128279;</span>&nbsp;<span class="gi-copy-label">Copy link</span></button>
+        <button type="button" class="gi-icon-btn gi-close" aria-label="Close">&#10005;</button>
+      </div>
+    </div>
+    <div class="gi-m-body"></div>
+  </dialog>
+
+  <!-- One template per live guide, rendered through the same include as its standalone page. -->
+  {%- for g in live %}
+  {%- comment %} Copy link shares the full page URL: it carries the preview card (the short /getinto<slug> redirect does not). {% endcomment %}
+  <template id="gi-tpl-{{ g.slug }}" data-title="Get Into {{ g.title }}" data-share="{{ g.url | absolute_url }}" data-player="{{ g.player }}">
+    {% include getinto-guide.html guide=g body=g.content mode="popup" %}
+  </template>
+  {%- endfor %}
+
+  <!-- status: soon -->
+  <template id="gi-tpl-soon" data-title="En camino">
+    <div class="gi-soon-box">
+      <span class="gi-status">EN CAMINO</span>
+      <p class="prompt" aria-hidden="true">~/los-nerdys $ ./getinto --campo=<span data-slot="slug"></span></p>
+      <h2 class="title" id="gi-m-title">GET INTO <span data-slot="title"></span><span class="cursor" aria-hidden="true">_</span></h2>
+      <p class="tagline" data-slot="blurb"></p>
+      <p style="color:var(--muted);margin-top:18px;font-size:1.1rem">This guide doesn't exist yet. If you work in this field, it could be yours.</p>
+      <div class="cta">
+        <a class="btn btn-primary" data-slot-href="contribute">¿La escribes tú?</a>
+        <a class="btn btn-ghost" href="#campos" data-close>See the other campos</a>
+      </div>
+    </div>
+  </template>
+
+  <script>
+  (function () {
+    var modal = document.getElementById('gi-modal');
+    var body = modal.querySelector('.gi-m-body');
+    var slugEl = modal.querySelector('.gi-m-slug');
+    var opener = null, current = null, pushed = false;
+    var BASE = location.pathname + location.search;
+    var NAV = window.top === window.self;   // only touch browser history when this page is the top-level page
+
+    function fillSoon(card, node) {
+      node.querySelectorAll('[data-slot="slug"]').forEach(function (e) { e.textContent = card.dataset.campo; });
+      node.querySelectorAll('[data-slot="title"]').forEach(function (e) { e.textContent = card.dataset.title.toUpperCase(); });
+      node.querySelectorAll('[data-slot="blurb"]').forEach(function (e) { e.textContent = card.dataset.blurb; });
+      node.querySelectorAll('[data-slot-href="contribute"]').forEach(function (e) { e.href = '/getinto/contribute.html?campo=' + card.dataset.campo; });
+    }
+
+    function wirePlayer(tpl) {
+      var box = body.querySelector('.gi-player'); if (!box) return;
+      var frame = box.querySelector('iframe');
+      var btns = body.querySelectorAll('.gi-switch button[data-fmt]');
+      var saved = null; try { saved = localStorage.getItem('ln-video-format'); } catch (e) {}
+      var fmt = saved || (window.innerWidth >= 720 ? 'landscape' : 'portrait');
+      function set(f, tell) {
+        box.setAttribute('data-format', f);
+        btns.forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.fmt === f)); });
+        if (tell && frame.contentWindow) frame.contentWindow.postMessage({ type: 'getinto', format: f }, '*');
+      }
+      set(fmt, false);
+      frame.src = (tpl.dataset.player || frame.dataset.src.split('?')[0]) + '?embed&format=' + fmt;
+      btns.forEach(function (b) { b.addEventListener('click', function () {
+        try { localStorage.setItem('ln-video-format', b.dataset.fmt); } catch (e) {}
+        set(b.dataset.fmt, true);
+      }); });
+    }
+
+    function open(card, push) {
+      var slug = card.dataset.campo;
+      var live = card.classList.contains('gi-live');
+      var tpl = document.getElementById(live ? 'gi-tpl-' + slug : 'gi-tpl-soon');
+      if (!tpl) return false;
+      var node = tpl.content.cloneNode(true);
+      if (!live) fillSoon(card, node);
+      body.replaceChildren(node);
+      body.scrollTop = 0;
+      slugEl.textContent = slug;
+      modal.dataset.share = tpl.dataset.share || (location.origin + BASE + '#' + slug);
+      current = slug; opener = card;
+      document.documentElement.classList.add('gi-locked');
+      if (!modal.open) modal.showModal();
+      if (live) wirePlayer(tpl);
+      body.querySelectorAll('[data-close]').forEach(function (a) { a.addEventListener('click', function (e) { e.preventDefault(); close(); }); });
+      document.title = (tpl.dataset.title || card.dataset.title) + ' | Los Nerdys';
+      if (push && NAV) { history.pushState({ campo: slug }, '', BASE + '#' + slug); pushed = true; } else pushed = false;
+      return true;
+    }
+
+    function teardown() {
+      body.replaceChildren();            // stops the player
+      document.documentElement.classList.remove('gi-locked');
+      document.title = 'Get Into | Los Nerdys';
+      current = null;
+      if (opener) { opener.focus({ preventScroll: true }); opener = null; }
+    }
+
+    function close() { if (!modal.open) return; modal.close(); }
+
+    modal.addEventListener('close', function () {
+      var wasOpen = current;
+      teardown();
+      if (NAV && wasOpen && location.hash === '#' + wasOpen) {
+        if (pushed) history.back();                       // undo our own entry, so Back doesn't reopen it
+        else history.replaceState(null, '', BASE);       // opened from a deep link: just clean the URL
+      }
+      pushed = false;
+    });
+    // click outside the box (on the backdrop) closes
+    modal.addEventListener('click', function (e) { if (e.target === modal) close(); });
+    modal.querySelector('.gi-close').addEventListener('click', close);
+    modal.querySelector('.gi-copy').addEventListener('click', function () {
+      var btn = this, label = btn.querySelector('.gi-copy-label');
+      var done = function () { if (label) { label.textContent = 'Copied'; setTimeout(function () { label.textContent = 'Copy link'; }, 1500); } };
+      if (navigator.clipboard) navigator.clipboard.writeText(modal.dataset.share).then(done, done); else done();
+    });
+
+    // cards: plain links without JS (full page), popup with JS
+    document.querySelectorAll('.gi-card[data-campo]').forEach(function (card) {
+      card.addEventListener('click', function (e) {
+        if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return; // let new-tab clicks through
+        if (open(card, true)) e.preventDefault();
+      });
+    });
+
+    function fromHash() {
+      var slug = location.hash.slice(1);
+      var card = slug && document.querySelector('.gi-card[data-campo="' + CSS.escape(slug) + '"]');
+      if (card) { if (current !== slug) open(card, false); }
+      else if (modal.open) { current = null; modal.close(); }
+    }
+    window.addEventListener('popstate', fromHash);   // back button closes, forward reopens
+    fromHash();                                       // deep link: /getinto/#cyber
+  })();
+  </script>
