@@ -85,8 +85,6 @@ img { max-width: 100%; }
 .links { display: flex; align-items: center; gap: 22px; flex-wrap: wrap; justify-content: flex-end; }
 .links a { font-weight: 600; font-size: 0.95rem; color: var(--muted); transition: color 0.15s ease; }
 .links a:hover { color: var(--rosa); }
-.links a.bio { color: var(--cyan); }
-.links a.bio:hover { color: var(--rosa); }
 .links a.active { color: var(--title); }
 
 .theme-toggle {
@@ -242,7 +240,7 @@ footer { text-align: center; padding: 52px 16px 44px; border-top: 1px solid var(
 @media (max-width: 720px) {
   .nav { padding: 12px 16px; }
   .links { gap: 12px; flex-wrap: nowrap; }
-  .links a:not(.bio):not(.gi-nav) { display: none; }   /* phones: Get Into, bio link, toggle */
+  .links a:not(.ep-nav):not(.gi-nav) { display: none; }   /* phones: Episodios, Get Into, toggle */
   .links a { font-size: 0.9rem; white-space: nowrap; }
   .theme-toggle { flex: none; }
   .brand { font-size: 1.1rem; }
